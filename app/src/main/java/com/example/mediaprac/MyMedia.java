@@ -10,11 +10,11 @@ public interface MyMedia {
 
     void release();
 
-    void play();
+    void resume();
 
     void pause();
 
-    void stop();
+//    void stop();
 
     void seekTo(long timeUs);
 

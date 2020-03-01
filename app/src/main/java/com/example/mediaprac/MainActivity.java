@@ -1,15 +1,14 @@
 package com.example.mediaprac;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.Surface;
 import android.view.SurfaceView;
 import android.view.View;
-import android.widget.Button;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -28,13 +27,14 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onResume() {
-
         super.onResume();
     }
 
     @Override
     protected void onPause() {
-
+        if (mMedia != null && mMedia.isRunning()) {
+            mMedia.pause();
+        }
         super.onPause();
     }
 
@@ -98,12 +98,12 @@ public class MainActivity extends AppCompatActivity {
         }).start();
     }
 
-    public void playButton_onClick(View view) {
+    public void resumeButton_onClick(View view) {
         if (mMedia == null || !mMedia.isRunning()) {
             toast("media is not running");
             return;
         }
-        mMedia.play();
+        mMedia.resume();
     }
 
     public void pauseButton_onClick(View view) {
@@ -114,7 +114,7 @@ public class MainActivity extends AppCompatActivity {
         mMedia.pause();
     }
 
-    public void stopButton_onClick(View view) {
+    public void restartButton_onClick(View view) {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -122,8 +122,8 @@ public class MainActivity extends AppCompatActivity {
                     toast("media is not running");
                     return;
                 }
-                mMedia.stop();
-                toast("stop");
+                mMedia.seekTo(0);
+                toast("seek to 0");
             }
         }).start();
     }

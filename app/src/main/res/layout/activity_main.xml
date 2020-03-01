@@ -27,8 +27,8 @@
         android:id="@+id/playButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:onClick="playButton_onClick"
-        android:text="play"
+        android:onClick="resumeButton_onClick"
+        android:text="resume"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/runButton" />
 
@@ -45,8 +45,8 @@
         android:id="@+id/stopButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:onClick="stopButton_onClick"
-        android:text="stop"
+        android:onClick="restartButton_onClick"
+        android:text="restart"
         app:layout_constraintStart_toEndOf="@+id/pauseButton"
         app:layout_constraintTop_toTopOf="@+id/pauseButton" />
 
@@ -55,7 +55,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:onClick="initializeButton_onClick"
-        android:text="Initialize"
+        android:text="initialize"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/frameLayout" />
 

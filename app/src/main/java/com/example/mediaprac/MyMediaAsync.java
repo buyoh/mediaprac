@@ -95,6 +95,18 @@ public class MyMediaAsync implements MyMedia {
         mWidth = videoMediaFormat.getInteger(MediaFormat.KEY_WIDTH);
         mHeight = videoMediaFormat.getInteger(MediaFormat.KEY_HEIGHT);
 
+        mVideoCodec.setCallback(new CodecCallback(mVideoExtractor, mSync, false));
+        mAudioCodec.setCallback(new CodecCallback(mAudioExtractor, mSync, true));
+
+        mSync.setCallback(new MediaSync.Callback() {
+            @Override
+            public void onAudioBufferConsumed(MediaSync sync, ByteBuffer audioBuffer, int bufferId) {
+                Log.d(TAG, "onAudioBufferConsumed " + bufferId);
+                mAudioCodec.releaseOutputBuffer(bufferId, true);
+            }
+        }, null);// This needs to be done since sync is paused on creation.
+
+
         mInitialized = true;
 
         Log.d(TAG, "[2]initialize");
@@ -106,13 +118,18 @@ public class MyMediaAsync implements MyMedia {
         Log.d(TAG, "[1]release");
         if (!mInitialized)
             return;
+        pause();
         mRunning = false;
-        mVideoExtractor.release();
-        mVideoCodec.release();
-        mAudioExtractor.release();
-        mAudioCodec.release();
-        mAudioTrack.release();
+
+        // :thinking_face:
         mSync.release();
+        mVideoCodec.stop();
+        mVideoCodec.release();
+        mAudioCodec.stop();
+        mAudioCodec.release();
+        mVideoExtractor.release();
+        mAudioExtractor.release();
+        mAudioTrack.release();
         mVideoExtractor = null;
         mVideoCodec = null;
         mAudioExtractor = null;
@@ -128,19 +145,11 @@ public class MyMediaAsync implements MyMedia {
     @Override
     public void run() {
         Log.d(TAG, "[1]run");
-
+        if (mRunning) {
+            Log.d(TAG, "already running");
+            return;
+        }
         mRunning = true;
-
-        mVideoCodec.setCallback(new CodecCallback(mVideoExtractor, mSync, false));
-        mAudioCodec.setCallback(new CodecCallback(mAudioExtractor, mSync, true));
-
-        mSync.setCallback(new MediaSync.Callback() {
-            @Override
-            public void onAudioBufferConsumed(MediaSync sync, ByteBuffer audioBuffer, int bufferId) {
-                Log.d(TAG, "onAudioBufferConsumed " + bufferId);
-                mAudioCodec.releaseOutputBuffer(bufferId, true);
-            }
-        }, null);// This needs to be done since sync is paused on creation.
 
         mVideoCodec.start();
         mAudioCodec.start();
@@ -149,7 +158,7 @@ public class MyMediaAsync implements MyMedia {
     }
 
     @Override
-    public void play() {
+    public void resume() {
         mSync.setPlaybackParams(new PlaybackParams().setSpeed(1.f));
         mAudioTrack.play();
     }
@@ -161,19 +170,25 @@ public class MyMediaAsync implements MyMedia {
 //        mSync.flush();
     }
 
-    @Override
-    public void stop() {
-        mSync.setPlaybackParams(new PlaybackParams().setSpeed(0.f));
-        mSync.flush();
-        // throw exception from another thread (onAudioBufferConsumed)...
-        mVideoCodec.stop();
-        mAudioCodec.stop();
-        mAudioTrack.stop();
-    }
+//    @Override
+//    public void stop() {
+//        Log.d(TAG, "stop [1]");
+//        mSync.setPlaybackParams(new PlaybackParams().setSpeed(0.f));
+//        mSync.flush();
+//        mVideoCodec.stop();  // bring to uninitialized state...
+//        mAudioCodec.stop();
+//        mAudioTrack.pause();
+//        mAudioTrack.flush();
+//        mAudioExtractor.seekTo(0, MediaExtractor.SEEK_TO_PREVIOUS_SYNC);
+//        mVideoExtractor.seekTo(0, MediaExtractor.SEEK_TO_PREVIOUS_SYNC);
+//        mRunning = false;
+//        Log.d(TAG, "stop [2]");
+//    }
 
     @Override
     public void seekTo(long timeUs) {
-        // hoge
+        mAudioExtractor.seekTo(timeUs, MediaExtractor.SEEK_TO_PREVIOUS_SYNC);
+        mVideoExtractor.seekTo(timeUs, MediaExtractor.SEEK_TO_PREVIOUS_SYNC);
     }
 
     @Override
@@ -245,6 +260,7 @@ public class MyMediaAsync implements MyMedia {
                 }
                 mSync.queueAudio(buffer, index, bufferInfo.presentationTimeUs);
             } else {
+
                 mediaCodec.releaseOutputBuffer(index, bufferInfo.presentationTimeUs * 1000); // renderTimestampNs
             }
         }
