@@ -46,7 +46,33 @@ public class MainActivity extends AppCompatActivity {
 
     //
 
-    public void initializeButton_onClick(View view) {
+    public void asyncInitializeButton_onClick(View view) {
+
+        final Context context = this;//getApplicationContext();
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if (mMedia != null && mMedia.isInitialized()) {
+                    toast("media is not released");
+                    return;
+                }
+                SurfaceView sv = findViewById(R.id.surfaceView1);
+                Surface s = sv.getHolder().getSurface();
+
+                toast("initializing...");
+                mMedia = MyMediaFactory.create(MyMediaFactory.TYPE_ASYNC, s, context);
+                if (mMedia.initialize(myNiceVideoContent)) {
+                    toast("initialize success");
+                } else {
+                    toast("initialize failed");
+                }
+            }
+        }).start();
+
+    }
+
+    public void asyncTunnelInitializeButton_onClick(View view) {
 
         final Context context = getApplicationContext();
 
