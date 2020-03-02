@@ -2,6 +2,7 @@ package com.example.mediaprac;
 
 import android.media.AudioAttributes;
 import android.media.AudioFormat;
+import android.media.AudioManager;
 import android.media.AudioTrack;
 import android.media.MediaCodec;
 import android.media.MediaCodecInfo;
@@ -118,16 +119,22 @@ public class MyMediaUtil {
 
 
     static public AudioTrack createAudioTrack(AudioFormat audioFormat) {
+        return createAudioTrack(audioFormat, 0, AudioManager.AUDIO_SESSION_ID_GENERATE);
+    }
+
+    static public AudioTrack createAudioTrack(AudioFormat audioFormat, int audioAttributesFlags, int audioSessionId) {
         int size = AudioTrack.getMinBufferSize(audioFormat.getSampleRate(),
                 audioFormat.getChannelMask(), audioFormat.getEncoding());
         return new AudioTrack.Builder()
                 .setAudioAttributes(new AudioAttributes.Builder()
                         .setUsage(AudioAttributes.USAGE_MEDIA)
                         .setContentType(AudioAttributes.CONTENT_TYPE_MOVIE)
+                        .setFlags(audioAttributesFlags)
                         .build())
                 .setAudioFormat(audioFormat)
                 .setTransferMode(AudioTrack.MODE_STREAM)
                 .setBufferSizeInBytes(size)
+                .setSessionId(audioSessionId)
                 .build();
     }
 

@@ -1,5 +1,6 @@
 package com.example.mediaprac;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -47,6 +48,8 @@ public class MainActivity extends AppCompatActivity {
 
     public void initializeButton_onClick(View view) {
 
+        final Context context = getApplicationContext();
+
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -58,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
                 Surface s = sv.getHolder().getSurface();
 
                 toast("initializing...");
-                mMedia = MyMediaFactory.Create(0, s);
+                mMedia = MyMediaFactory.create(MyMediaFactory.TYPE_TUNNELED_ASYNC, s, context);
                 if (mMedia.initialize(myNiceVideoContent)) {
                     toast("initialize success");
                 } else {
@@ -94,6 +97,7 @@ public class MainActivity extends AppCompatActivity {
                 }
                 mMedia.release();
                 toast("release");
+                mMedia = null;
             }
         }).start();
     }
