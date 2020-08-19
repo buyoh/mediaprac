@@ -48,7 +48,7 @@ public class MyMediaTunnelAsync implements MyMedia {
                 .setFlags(AudioAttributes.FLAG_HW_AV_SYNC)
                 .setUsage(AudioAttributes.USAGE_MEDIA)
                 .build();
-        return new AudioTrack(aa, audioFormat, size, AudioTrack.MODE_STREAM, audioSessionId);
+        return new AudioTrack(aa, audioFormat, size*4, AudioTrack.MODE_STREAM, audioSessionId);
     }
 
     @Override
@@ -99,7 +99,7 @@ public class MyMediaTunnelAsync implements MyMedia {
         // enable tunneled playback
         videoMediaFormat.setFeatureEnabled(MediaCodecInfo.CodecCapabilities.FEATURE_TunneledPlayback, true);
         videoMediaFormat.setInteger(MediaFormat.KEY_AUDIO_SESSION_ID, audioSessionId);
-        audioMediaFormat.setFeatureEnabled(MediaCodecInfo.CodecCapabilities.FEATURE_TunneledPlayback, true);
+//        audioMediaFormat.setFeatureEnabled(MediaCodecInfo.CodecCapabilities.FEATURE_TunneledPlayback, true);
         audioMediaFormat.setInteger(MediaFormat.KEY_AUDIO_SESSION_ID, audioSessionId);
 
 //        mAudioTrack = MyMediaUtil.createAudioTrack(
@@ -111,6 +111,9 @@ public class MyMediaTunnelAsync implements MyMedia {
                 MyMediaUtil.createAudioFormatFromMediaFormat(audioMediaFormat),
                 audioSessionId
         );
+        if (mAudioTrack.getState() == AudioTrack.STATE_UNINITIALIZED) {
+            Log.w(TAG, "AudioTrack is uninitialized :thinking_face:");
+        }
 
         mVideoExtractor = MyMediaUtil.createExtractor(mContentUri);
         assert mVideoExtractor != null;
@@ -194,12 +197,20 @@ public class MyMediaTunnelAsync implements MyMedia {
     @Override
     public void resume() {
 //        mSync.setPlaybackParams(new PlaybackParams().setSpeed(1.f));
+        if (mAudioTrack.getState() == AudioTrack.STATE_UNINITIALIZED) {
+            Log.w(TAG, "AudioTrack is not initialized. do nothing.");
+            return;
+        }
         mAudioTrack.play();
     }
 
     @Override
     public void pause() {
 //        mSync.setPlaybackParams(new PlaybackParams().setSpeed(0.f));
+        if (mAudioTrack.getState() == AudioTrack.STATE_UNINITIALIZED) {
+            Log.w(TAG, "AudioTrack is not initialized. do nothing.");
+            return;
+        }
         mAudioTrack.pause();
 //        mSync.flush();
     }
