@@ -79,12 +79,12 @@ public class MyMediaAsync implements MyMedia {
         mVideoExtractor = MyMediaUtil.createExtractor(mContentUri);
         assert mVideoExtractor != null;
         mVideoExtractor.selectTrack(videoTrackIndex);
-        mVideoCodec = MyMediaUtil.createVideoDecoder(extractor.getTrackFormat(videoTrackIndex), mSurface);
+        mVideoCodec = MyMediaUtil.createVideoDecoder(videoMediaFormat, mSurface);
 
         mAudioExtractor = MyMediaUtil.createExtractor(mContentUri);
         assert mAudioExtractor != null;
         mAudioExtractor.selectTrack(audioTrackIndex);
-        mAudioCodec = MyMediaUtil.createAudioDecoder(extractor.getTrackFormat(audioTrackIndex));
+        mAudioCodec = MyMediaUtil.createAudioDecoder(audioMediaFormat);
 
         mAudioTrack = MyMediaUtil.createAudioTrack(MyMediaUtil.createAudioFormatFromMediaFormat(audioMediaFormat));
         mSync.setAudioTrack(mAudioTrack);

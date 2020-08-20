@@ -17,6 +17,8 @@ import androidx.annotation.NonNull;
 import java.nio.ByteBuffer;
 
 public class MyMediaTunnelAsync implements MyMedia {
+    // ref
+    // http://blog.ironhead.ninja/2016/01/14/android-tunneled-playback.html
 
     static final String TAG = "MyMedia";
 
@@ -43,12 +45,13 @@ public class MyMediaTunnelAsync implements MyMedia {
     static private AudioTrack createAudioTrackAVSync(AudioFormat audioFormat, int audioSessionId) {
         int size = AudioTrack.getMinBufferSize(audioFormat.getSampleRate(),
                 audioFormat.getChannelMask(), audioFormat.getEncoding());
+        //
         AudioAttributes aa = new AudioAttributes.Builder()
                 .setContentType(AudioAttributes.CONTENT_TYPE_MOVIE)
-                .setFlags(AudioAttributes.FLAG_HW_AV_SYNC)
+                .setFlags(AudioAttributes.FLAG_HW_AV_SYNC)  // <<<<<
                 .setUsage(AudioAttributes.USAGE_MEDIA)
                 .build();
-        return new AudioTrack(aa, audioFormat, size*4, AudioTrack.MODE_STREAM, audioSessionId);
+        return new AudioTrack(aa, audioFormat, size * 3, AudioTrack.MODE_STREAM, audioSessionId);
     }
 
     @Override
@@ -96,29 +99,33 @@ public class MyMediaTunnelAsync implements MyMedia {
         MediaFormat audioMediaFormat = extractor.getTrackFormat(audioTrackIndex);
         MediaFormat videoMediaFormat = extractor.getTrackFormat(videoTrackIndex);
 
-        // enable tunneled playback
+        // enable tunneled playback (tunneling)
         videoMediaFormat.setFeatureEnabled(MediaCodecInfo.CodecCapabilities.FEATURE_TunneledPlayback, true);
+        // set audio session ID
         videoMediaFormat.setInteger(MediaFormat.KEY_AUDIO_SESSION_ID, audioSessionId);
+        // ????
 //        audioMediaFormat.setFeatureEnabled(MediaCodecInfo.CodecCapabilities.FEATURE_TunneledPlayback, true);
-        audioMediaFormat.setInteger(MediaFormat.KEY_AUDIO_SESSION_ID, audioSessionId);
+//        audioMediaFormat.setInteger(MediaFormat.KEY_AUDIO_SESSION_ID, audioSessionId);
 
-//        mAudioTrack = MyMediaUtil.createAudioTrack(
-//                MyMediaUtil.createAudioFormatFromMediaFormat(audioMediaFormat),
-//                AudioAttributes.FLAG_HW_AV_SYNC,  // NOTE: audioTrack enabled AV_SYNC
-//                audioSessionId
-//        );
         mAudioTrack = createAudioTrackAVSync(
                 MyMediaUtil.createAudioFormatFromMediaFormat(audioMediaFormat),
                 audioSessionId
         );
         if (mAudioTrack.getState() == AudioTrack.STATE_UNINITIALIZED) {
-            Log.w(TAG, "AudioTrack is uninitialized :thinking_face:");
+            Log.w(TAG, "AudioTrack is uninitialized");
         }
 
         mVideoExtractor = MyMediaUtil.createExtractor(mContentUri);
         assert mVideoExtractor != null;
         mVideoExtractor.selectTrack(videoTrackIndex);
-        mVideoCodec = MyMediaUtil.createVideoDecoder(extractor.getTrackFormat(videoTrackIndex), mSurface);
+        mVideoCodec = MyMediaUtil.createVideoDecoder(videoMediaFormat, mSurface);
+
+        // check supported
+        if (mVideoCodec.getCodecInfo()
+                .getCapabilitiesForType(videoMediaFormat.getString(MediaFormat.KEY_MIME))
+                .isFeatureSupported(MediaCodecInfo.CodecCapabilities.FEATURE_TunneledPlayback)) {
+            Log.w(TAG, "VideoCodec is not supported TunneledPlayBack!!");
+        }
 
         mAudioExtractor = MyMediaUtil.createExtractor(mContentUri);
         assert mAudioExtractor != null;
@@ -303,11 +310,14 @@ public class MyMediaTunnelAsync implements MyMedia {
                     Log.w(TAG, "buffer is null");
                     return;
                 }
-//                mSync.queueAudio(buffer, index, bufferInfo.presentationTimeUs);
-                mAudioTrack.write(buffer, bufferInfo.size, AudioTrack.WRITE_BLOCKING, bufferInfo.presentationTimeUs);
+                // streaming mode on a HW_AV_SYNC track
+                // WARNING: The timestamp, in nanoseconds!!!!
+                mAudioTrack.write(buffer, bufferInfo.size, AudioTrack.WRITE_BLOCKING, bufferInfo.presentationTimeUs * 1000);
+                mediaCodec.releaseOutputBuffer(index, false);
+//                mediaCodec.releaseOutputBuffer(index, bufferInfo.presentationTimeUs * 1000); // renderTimestampNs
 
             } else {
-                // NG!
+//                mediaCodec.releaseOutputBuffer(index, false);
 //                mediaCodec.releaseOutputBuffer(index, bufferInfo.presentationTimeUs * 1000); // renderTimestampNs
             }
         }
