@@ -1,5 +1,6 @@
 package com.example.mediaprac;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -12,7 +13,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
 
-    static final String myNiceVideoContent = "https://ia600603.us.archive.org/30/items/Tears-of-Steel/tears_of_steel_1080p.mp4";
+    private static final String TAG = "MainActivity";
+
+    private static final String myNiceVideoContent = "https://ia600603.us.archive.org/30/items/Tears-of-Steel/tears_of_steel_1080p.mp4";
 //    static final String myNiceVideoContent = "https://scontent-nrt1-1.cdninstagram.com/v/t50.2886-16/41638619_239560346735367_5701419805668761311_n.mp4?_nc_ht=scontent-nrt1-1.cdninstagram.com&_nc_cat=103&_nc_ohc=NN0ddOIY3fUAX81uvbP&oe=5E5992B3&oh=f3f3097a6daa345e82fc5c0f12c7cb24";
 
     Handler mUIHandler = null;
@@ -45,11 +48,14 @@ public class MainActivity extends AppCompatActivity {
 
     //
 
-    public void initializeButton_onClick(View view) {
+    public void asyncInitializeButton_onClick(final View view) {
 
-        new Thread(new Runnable() {
+        final Context context = this;//getApplicationContext();
+
+        view.setEnabled(false);
+        new Thread(new TryRunnable() {
             @Override
-            public void run() {
+            public void runTask() {
                 if (mMedia != null && mMedia.isInitialized()) {
                     toast("media is not released");
                     return;
@@ -58,21 +64,57 @@ public class MainActivity extends AppCompatActivity {
                 Surface s = sv.getHolder().getSurface();
 
                 toast("initializing...");
-                mMedia = MyMediaFactory.Create(0, s);
+                mMedia = MyMediaFactory.create(MyMediaFactory.TYPE_ASYNC, s, context);
                 if (mMedia.initialize(myNiceVideoContent)) {
                     toast("initialize success");
                 } else {
                     toast("initialize failed");
                 }
             }
+            @Override
+            public void finalizeTask() {
+                enableView(view, true);
+            }
         }).start();
 
     }
 
-    public void runButton_onClick(View view) {
-        new Thread(new Runnable() {
+    public void asyncTunnelInitializeButton_onClick(final View view) {
+
+        final Context context = getApplicationContext();
+
+        view.setEnabled(false);
+        new Thread(new TryRunnable() {
             @Override
-            public void run() {
+            public void runTask() {
+                if (mMedia != null && mMedia.isInitialized()) {
+                    toast("media is not released");
+                    return;
+                }
+                SurfaceView sv = findViewById(R.id.surfaceView1);
+                Surface s = sv.getHolder().getSurface();
+
+                toast("initializing...");
+                mMedia = MyMediaFactory.create(MyMediaFactory.TYPE_TUNNELED_ASYNC, s, context);
+                if (mMedia.initialize(myNiceVideoContent)) {
+                    toast("initialize success");
+                } else {
+                    toast("initialize failed");
+                }
+            }
+            @Override
+            public void finalizeTask() {
+                enableView(view, true);
+            }
+        }).start();
+
+    }
+
+    public void runButton_onClick(final View view) {
+        view.setEnabled(false);
+        new Thread(new TryRunnable() {
+            @Override
+            public void runTask() {
                 if (mMedia == null || !mMedia.isInitialized()) {
                     toast("media is not initialized");
                     return;
@@ -81,49 +123,68 @@ public class MainActivity extends AppCompatActivity {
                 mMedia.run();
                 toast("run");
             }
+            @Override
+            public void finalizeTask() {
+                enableView(view, true);
+            }
         }).start();
     }
 
-    public void releaseButton_onClick(View view) {
-        new Thread(new Runnable() {
+    public void releaseButton_onClick(final View view) {
+        view.setEnabled(false);
+        new Thread(new TryRunnable() {
             @Override
-            public void run() {
+            public void runTask() {
                 if (mMedia == null || !mMedia.isInitialized()) {
                     toast("media is not initialized");
                     return;
                 }
                 mMedia.release();
                 toast("release");
+                mMedia = null;
+            }
+            @Override
+            public void finalizeTask() {
+                enableView(view, true);
             }
         }).start();
     }
 
     public void resumeButton_onClick(View view) {
+        Log.d(TAG, "clicked resume button");
         if (mMedia == null || !mMedia.isRunning()) {
             toast("media is not running");
             return;
         }
         mMedia.resume();
+        toast("resume");
     }
 
     public void pauseButton_onClick(View view) {
+        Log.d(TAG, "clicked pause button");
         if (mMedia == null || !mMedia.isRunning()) {
             toast("media is not running");
             return;
         }
         mMedia.pause();
+        toast("pause");
     }
 
-    public void restartButton_onClick(View view) {
-        new Thread(new Runnable() {
+    public void restartButton_onClick(final View view) {
+        view.setEnabled(false);
+        new Thread(new TryRunnable() {
             @Override
-            public void run() {
+            public void runTask() {
                 if (mMedia == null || !mMedia.isRunning()) {
                     toast("media is not running");
                     return;
                 }
                 mMedia.seekTo(0);
                 toast("seek to 0");
+            }
+            @Override
+            public void finalizeTask() {
+                enableView(view, true);
             }
         }).start();
     }
@@ -132,16 +193,55 @@ public class MainActivity extends AppCompatActivity {
 
     private void enableView(int id, boolean enable) {
         View v = findViewById(id);
-        v.setEnabled(enable);
+        enableView(v, enable);
+    }
+    private void enableView(final View view, final boolean enable) {
+        if (!Thread.currentThread().equals(mUIHandler.getLooper().getThread())) {
+            mUIHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    enableView(view, enable);
+                }
+            });
+        }
+        else {
+            view.setEnabled(enable);
+        }
+
     }
 
     private void toast(final String message) {
-        Log.d("TOAST", message);
-        mUIHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+        if (!Thread.currentThread().equals(mUIHandler.getLooper().getThread())) {
+            mUIHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    toast(message);
+                }
+            });
+        }
+        else {
+            Log.d("TOAST", message);
+            Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+        }
+
+    }
+
+    static abstract class TryRunnable implements Runnable {
+        @Override
+        public final void run() {
+            try{
+                runTask();
             }
-        });
+            catch (Exception e) {
+                e.printStackTrace();
+                onErrorTask();
+            }
+            finally {
+                finalizeTask();
+            }
+        }
+        public abstract void runTask();
+        public void onErrorTask() {}
+        public void finalizeTask() {}
     }
 }

@@ -51,13 +51,24 @@
         app:layout_constraintTop_toTopOf="@+id/pauseButton" />
 
     <Button
-        android:id="@+id/initializeButton"
+        android:id="@+id/asyncInitializeButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:onClick="initializeButton_onClick"
-        android:text="initialize"
+        android:backgroundTint="@android:color/holo_blue_light"
+        android:onClick="asyncInitializeButton_onClick"
+        android:text="async"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/frameLayout" />
+
+    <Button
+        android:id="@+id/asyncTunnelInitializeButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@android:color/holo_blue_light"
+        android:onClick="asyncTunnelInitializeButton_onClick"
+        android:text="asyncTunnel"
+        app:layout_constraintStart_toEndOf="@+id/asyncInitializeButton"
+        app:layout_constraintTop_toTopOf="@+id/asyncInitializeButton" />
 
     <Button
         android:id="@+id/runButton"
@@ -66,7 +77,7 @@
         android:onClick="runButton_onClick"
         android:text="run"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/initializeButton" />
+        app:layout_constraintTop_toBottomOf="@+id/asyncInitializeButton" />
 
     <Button
         android:id="@+id/releaseButton"
@@ -75,6 +86,6 @@
         android:onClick="releaseButton_onClick"
         android:text="release"
         app:layout_constraintStart_toEndOf="@+id/runButton"
-        app:layout_constraintTop_toBottomOf="@+id/initializeButton" />
+        app:layout_constraintTop_toTopOf="@+id/runButton" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
