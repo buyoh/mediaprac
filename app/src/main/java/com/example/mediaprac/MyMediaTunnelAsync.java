@@ -104,9 +104,6 @@ public class MyMediaTunnelAsync implements MyMedia {
         videoMediaFormat.setFeatureEnabled(MediaCodecInfo.CodecCapabilities.FEATURE_TunneledPlayback, true);
         // set audio session ID
         videoMediaFormat.setInteger(MediaFormat.KEY_AUDIO_SESSION_ID, audioSessionId);
-        // ????
-//        audioMediaFormat.setFeatureEnabled(MediaCodecInfo.CodecCapabilities.FEATURE_TunneledPlayback, true);
-//        audioMediaFormat.setInteger(MediaFormat.KEY_AUDIO_SESSION_ID, audioSessionId);
 
         mAudioTrack = createAudioTrackAVSync(
                 MyMediaUtil.createAudioFormatFromMediaFormat(audioMediaFormat),
@@ -165,7 +162,6 @@ public class MyMediaTunnelAsync implements MyMedia {
         pause();
         mRunning = false;
 
-        // :thinking_face:
 //        mSync.release();
         mVideoCodec.stop();
         mVideoCodec.release();
@@ -197,7 +193,6 @@ public class MyMediaTunnelAsync implements MyMedia {
 
         mVideoCodec.start();
         mAudioCodec.start();
-//        mAudioTrack.
 
         Log.d(TAG, "[2]run");
     }

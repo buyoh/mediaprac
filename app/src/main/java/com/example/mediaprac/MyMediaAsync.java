@@ -19,7 +19,6 @@ public class MyMediaAsync implements MyMedia {
     static final String TAG = "MyMedia";
 
     private String mContentUri = "https://ia600603.us.archive.org/30/items/Tears-of-Steel/tears_of_steel_1080p.mp4";
-//    private String mContentUri = "https://scontent-nrt1-1.cdninstagram.com/v/t50.2886-16/41638619_239560346735367_5701419805668761311_n.mp4?_nc_ht=scontent-nrt1-1.cdninstagram.com&_nc_cat=103&_nc_ohc=NN0ddOIY3fUAX81uvbP&oe=5E5992B3&oh=f3f3097a6daa345e82fc5c0f12c7cb24";
 
     private boolean mRunning, mPlaying, mInitialized;
     private Surface mGivenSurface, mSurface;
@@ -122,7 +121,6 @@ public class MyMediaAsync implements MyMedia {
         pause();
         mRunning = false;
 
-        // :thinking_face:
         mSync.release();
         mVideoCodec.stop();
         mVideoCodec.release();

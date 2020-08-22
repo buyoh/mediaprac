@@ -16,7 +16,6 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
 
     private static final String myNiceVideoContent = "https://ia600603.us.archive.org/30/items/Tears-of-Steel/tears_of_steel_1080p.mp4";
-//    static final String myNiceVideoContent = "https://scontent-nrt1-1.cdninstagram.com/v/t50.2886-16/41638619_239560346735367_5701419805668761311_n.mp4?_nc_ht=scontent-nrt1-1.cdninstagram.com&_nc_cat=103&_nc_ohc=NN0ddOIY3fUAX81uvbP&oe=5E5992B3&oh=f3f3097a6daa345e82fc5c0f12c7cb24";
 
     Handler mUIHandler = null;
     MyMedia mMedia = null;
