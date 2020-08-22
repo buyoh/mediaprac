@@ -217,7 +217,7 @@ public class MainActivity extends AppCompatActivity {
         runOnUIThread(new Runnable() {
             @Override
             public void run() {
-                enableView(view, enable);
+                view.setEnabled(enable);
             }
         });
     }
