@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.Surface;
 import android.view.SurfaceView;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -120,6 +121,14 @@ public class MainActivity extends AppCompatActivity {
                 }
                 toast("calling run...");
                 mMedia.run();
+
+                mUIHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        resizeVideoFrame();
+                    }
+                });
+
                 toast("run");
             }
             @Override
@@ -202,11 +211,26 @@ public class MainActivity extends AppCompatActivity {
                     enableView(view, enable);
                 }
             });
-        }
-        else {
+        } else {
             view.setEnabled(enable);
         }
 
+    }
+
+    private void resizeVideoFrame() {
+        SurfaceView sv = findViewById(R.id.surfaceView1);
+        View pv = (View) sv.getParent();
+        int maxWidth = pv.getWidth();
+        int maxHeight = pv.getHeight();
+        int originalWidth = mMedia.getWidth();
+        int originalHeight = mMedia.getHeight();
+        double rw = (double) maxWidth / originalWidth;
+        double rh = (double) maxHeight / originalHeight;
+        double r = Math.min(rw, rh);
+        ViewGroup.LayoutParams lp = sv.getLayoutParams();
+        lp.width = (int) (r * originalWidth);
+        lp.height = (int) (r * originalHeight);
+        sv.setLayoutParams(lp);
     }
 
     private void toast(final String message) {
