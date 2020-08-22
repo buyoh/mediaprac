@@ -1,4 +1,4 @@
-package com.example.mediaprac;
+package com.example.mediaprac.mymedia;
 
 import android.view.Surface;
 

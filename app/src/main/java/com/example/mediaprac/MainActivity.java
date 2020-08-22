@@ -13,6 +13,9 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.mediaprac.mymedia.MyMedia;
+import com.example.mediaprac.mymedia.MyMediaFactory;
+
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
