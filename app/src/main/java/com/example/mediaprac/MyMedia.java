@@ -1,5 +1,7 @@
 package com.example.mediaprac;
 
+import android.view.Surface;
+
 public interface MyMedia {
     // do not call from ui thread.
     boolean initialize(String contentUri);
@@ -21,6 +23,8 @@ public interface MyMedia {
     int getWidth();
 
     int getHeight();
+
+    void setSurface(Surface s);
 
     boolean isRunning();
 

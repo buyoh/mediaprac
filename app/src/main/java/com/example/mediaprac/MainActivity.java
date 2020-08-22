@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.Surface;
+import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,12 +21,38 @@ public class MainActivity extends AppCompatActivity {
 
     Handler mUIHandler = null;
     MyMedia mMedia = null;
+    SurfaceHolder.Callback mSurfaceHolderCallback = null;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        mSurfaceHolderCallback = new SurfaceHolder.Callback() {
+            @Override
+            public void surfaceCreated(SurfaceHolder surfaceHolder) {
+                if (mMedia == null || !mMedia.isInitialized())
+                    return;
+                mMedia.setSurface(surfaceHolder.getSurface());
+            }
+
+            @Override
+            public void surfaceChanged(SurfaceHolder surfaceHolder, int format, int width, int height) {
+                if (mMedia == null || !mMedia.isInitialized())
+                    return;
+                mMedia.setSurface(surfaceHolder.getSurface());
+            }
+
+            @Override
+            public void surfaceDestroyed(SurfaceHolder surfaceHolder) {
+            }
+        };
+
         super.onCreate(savedInstanceState);
+
         mUIHandler = new Handler();
         setContentView(R.layout.activity_main);
+
+        SurfaceView sv = findViewById(R.id.surfaceView1);
+        sv.getHolder().addCallback(mSurfaceHolderCallback);
     }
 
     @Override

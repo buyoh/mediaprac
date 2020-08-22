@@ -155,6 +155,15 @@ public class MyMediaTunnelAsync implements MyMedia {
     }
 
     @Override
+    public void setSurface(@NonNull Surface s) {
+        mGivenSurface = s;
+        if (mVideoCodec == null) return;
+        mSurface = mGivenSurface;
+        mVideoCodec.setOutputSurface(mSurface);
+    }
+
+
+    @Override
     public void release() {
         Log.d(TAG, "[1]release");
         if (!mInitialized)

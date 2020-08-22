@@ -114,6 +114,14 @@ public class MyMediaAsync implements MyMedia {
     }
 
     @Override
+    public void setSurface(@NonNull Surface s) {
+        mGivenSurface = s;
+        if (mVideoCodec == null) return;
+        assert mSync != null;
+        mSync.setSurface(mGivenSurface);
+    }
+
+    @Override
     public void release() {
         Log.d(TAG, "[1]release");
         if (!mInitialized)
