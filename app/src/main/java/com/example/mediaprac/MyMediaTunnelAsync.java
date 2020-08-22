@@ -24,7 +24,7 @@ public class MyMediaTunnelAsync implements MyMedia {
 
     private String mContentUri = "https://ia600603.us.archive.org/30/items/Tears-of-Steel/tears_of_steel_1080p.mp4";
 
-    private boolean mRunning, mInitialized;
+    private boolean mRunning, mPlaying, mInitialized;
     private Surface mGivenSurface, mSurface;
     private AudioTrack mAudioTrack;
     //    private MediaSync mSync;
@@ -37,6 +37,7 @@ public class MyMediaTunnelAsync implements MyMedia {
     public MyMediaTunnelAsync(Surface surface, Context context) {
         assert surface != null;
         mRunning = false;
+        mPlaying = false;
         mInitialized = false;
         mGivenSurface = surface;
         mContext = context;
@@ -209,6 +210,7 @@ public class MyMediaTunnelAsync implements MyMedia {
             return;
         }
         mAudioTrack.play();
+        mPlaying = true;
     }
 
     @Override
@@ -220,6 +222,7 @@ public class MyMediaTunnelAsync implements MyMedia {
         }
         mAudioTrack.pause();
 //        mSync.flush();
+        mPlaying = false;
     }
 
 //    @Override
@@ -256,6 +259,11 @@ public class MyMediaTunnelAsync implements MyMedia {
     @Override
     public boolean isRunning() {
         return mRunning;
+    }
+
+    @Override
+    public boolean isPlaying() {
+        return mPlaying;
     }
 
     @Override

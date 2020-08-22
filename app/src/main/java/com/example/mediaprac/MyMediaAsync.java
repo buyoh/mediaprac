@@ -21,7 +21,7 @@ public class MyMediaAsync implements MyMedia {
     private String mContentUri = "https://ia600603.us.archive.org/30/items/Tears-of-Steel/tears_of_steel_1080p.mp4";
 //    private String mContentUri = "https://scontent-nrt1-1.cdninstagram.com/v/t50.2886-16/41638619_239560346735367_5701419805668761311_n.mp4?_nc_ht=scontent-nrt1-1.cdninstagram.com&_nc_cat=103&_nc_ohc=NN0ddOIY3fUAX81uvbP&oe=5E5992B3&oh=f3f3097a6daa345e82fc5c0f12c7cb24";
 
-    private boolean mRunning, mInitialized;
+    private boolean mRunning, mPlaying, mInitialized;
     private Surface mGivenSurface, mSurface;
     private AudioTrack mAudioTrack;
     private MediaSync mSync;
@@ -33,6 +33,7 @@ public class MyMediaAsync implements MyMedia {
     public MyMediaAsync(Surface surface) {
         assert surface != null;
         mRunning = false;
+        mPlaying = false;
         mInitialized = false;
         mGivenSurface = surface;
     }
@@ -161,6 +162,7 @@ public class MyMediaAsync implements MyMedia {
     public void resume() {
         mSync.setPlaybackParams(new PlaybackParams().setSpeed(1.f));
         mAudioTrack.play();
+        mPlaying = true;
     }
 
     @Override
@@ -168,6 +170,7 @@ public class MyMediaAsync implements MyMedia {
         mSync.setPlaybackParams(new PlaybackParams().setSpeed(0.f));
         mAudioTrack.pause();
 //        mSync.flush();
+        mPlaying = false;
     }
 
 //    @Override
@@ -204,6 +207,11 @@ public class MyMediaAsync implements MyMedia {
     @Override
     public boolean isRunning() {
         return mRunning;
+    }
+
+    @Override
+    public boolean isPlaying() {
+        return mPlaying;
     }
 
     @Override

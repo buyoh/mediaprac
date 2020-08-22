@@ -24,5 +24,7 @@ public interface MyMedia {
 
     boolean isRunning();
 
+    boolean isPlaying();
+
     boolean isInitialized();
 }
