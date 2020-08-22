@@ -190,6 +190,7 @@ public class MainActivity extends AppCompatActivity {
                 mMedia.seekTo(0);
                 toast("seek to 0");
             }
+
             @Override
             public void finalizeTask() {
                 enableView(view, true);
@@ -199,22 +200,26 @@ public class MainActivity extends AppCompatActivity {
 
     //
 
+    private void runOnUIThread(Runnable r) {
+        if (Thread.currentThread().equals(mUIHandler.getLooper().getThread())) {
+            r.run();
+        } else {
+            mUIHandler.post(r);
+        }
+    }
+
     private void enableView(int id, boolean enable) {
         View v = findViewById(id);
         enableView(v, enable);
     }
-    private void enableView(final View view, final boolean enable) {
-        if (!Thread.currentThread().equals(mUIHandler.getLooper().getThread())) {
-            mUIHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    enableView(view, enable);
-                }
-            });
-        } else {
-            view.setEnabled(enable);
-        }
 
+    private void enableView(final View view, final boolean enable) {
+        runOnUIThread(new Runnable() {
+            @Override
+            public void run() {
+                enableView(view, enable);
+            }
+        });
     }
 
     private void resizeVideoFrame() {
@@ -234,19 +239,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void toast(final String message) {
-        if (!Thread.currentThread().equals(mUIHandler.getLooper().getThread())) {
-            mUIHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    toast(message);
-                }
-            });
-        }
-        else {
-            Log.d("TOAST", message);
-            Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
-        }
-
+        final Context that = this;
+        runOnUIThread(new Runnable() {
+            @Override
+            public void run() {
+                Log.d("TOAST", message);
+                Toast.makeText(that, message, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     static abstract class TryRunnable implements Runnable {
