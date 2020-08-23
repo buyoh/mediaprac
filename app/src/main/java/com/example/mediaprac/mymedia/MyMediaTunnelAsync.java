@@ -20,9 +20,9 @@ public class MyMediaTunnelAsync implements MyMedia {
     // ref
     // http://blog.ironhead.ninja/2016/01/14/android-tunneled-playback.html
 
-    static final String TAG = "MyMedia";
+    static final String TAG = "MyMediaTunnelAsync";
 
-    private String mContentUri = "https://ia600603.us.archive.org/30/items/Tears-of-Steel/tears_of_steel_1080p.mp4";
+    private String mContentUri = null;
 
     private boolean mRunning, mPlaying, mInitialized;
     private Surface mGivenSurface, mSurface;
@@ -71,10 +71,6 @@ public class MyMediaTunnelAsync implements MyMedia {
             return false;
         }
 
-//        mSync = new MediaSync();
-//        mSync.setPlaybackParams(new PlaybackParams().setSpeed(0.f));
-//        mSync.setSurface(mGivenSurface);
-//        mSurface = mSync.createInputSurface();
         mSurface = mGivenSurface;
 
         // get an audio session id for tunneling
@@ -130,23 +126,11 @@ public class MyMediaTunnelAsync implements MyMedia {
         mAudioExtractor.selectTrack(audioTrackIndex);
         mAudioCodec = MyMediaUtil.createAudioDecoder(extractor.getTrackFormat(audioTrackIndex));
 
-//        mSync.setSyncParams(new SyncParams()
-//                .setSyncSource(SyncParams.SYNC_SOURCE_DEFAULT));
-
         mWidth = videoMediaFormat.getInteger(MediaFormat.KEY_WIDTH);
         mHeight = videoMediaFormat.getInteger(MediaFormat.KEY_HEIGHT);
 
         mVideoCodec.setCallback(new CodecCallback(mVideoExtractor, mAudioTrack, false));
         mAudioCodec.setCallback(new CodecCallback(mAudioExtractor, mAudioTrack, true));
-
-//        mSync.setCallback(new MediaSync.Callback() {
-//            @Override
-//            public void onAudioBufferConsumed(MediaSync sync, ByteBuffer audioBuffer, int bufferId) {
-//                Log.d(TAG, "onAudioBufferConsumed " + bufferId);
-//                mAudioCodec.releaseOutputBuffer(bufferId, true);
-//            }
-//        }, null);// This needs to be done since sync is paused on creation.
-
 
         mInitialized = true;
 
@@ -219,13 +203,11 @@ public class MyMediaTunnelAsync implements MyMedia {
 
     @Override
     public void pause() {
-//        mSync.setPlaybackParams(new PlaybackParams().setSpeed(0.f));
         if (mAudioTrack.getState() == AudioTrack.STATE_UNINITIALIZED) {
             Log.w(TAG, "AudioTrack is not initialized. do nothing.");
             return;
         }
         mAudioTrack.pause();
-//        mSync.flush();
         mPlaying = false;
     }
 
@@ -304,11 +286,10 @@ public class MyMediaTunnelAsync implements MyMedia {
                 Log.w(TAG, "track empty");
                 return;
             }
-            long time = mExtractor.getSampleTime();
-            Log.d(TAG, "sampleTime=" + time);
+            long timeMs = mExtractor.getSampleTime(); // microsecond
             mediaCodec.queueInputBuffer(
                     index, 0, size,
-                    time, 0);
+                    timeMs, 0);
 
             mExtractor.advance();
         }
@@ -319,7 +300,7 @@ public class MyMediaTunnelAsync implements MyMedia {
             if (mIsAudio) {
                 ByteBuffer buffer = mediaCodec.getOutputBuffer(index);
                 if (buffer == null) {
-                    Log.w(TAG, "buffer is null");
+                    Log.w(TAG, "onOutputBufferAvailable: buffer is null");
                     return;
                 }
                 // streaming mode on a HW_AV_SYNC track

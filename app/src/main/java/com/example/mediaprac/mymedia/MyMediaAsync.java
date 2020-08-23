@@ -16,9 +16,9 @@ import java.nio.ByteBuffer;
 
 public class MyMediaAsync implements MyMedia {
 
-    static final String TAG = "MyMedia";
+    static final String TAG = "MyMediaAsync";
 
-    private String mContentUri = "https://ia600603.us.archive.org/30/items/Tears-of-Steel/tears_of_steel_1080p.mp4";
+    private String mContentUri = null;
 
     private boolean mRunning, mPlaying, mInitialized;
     private Surface mGivenSurface, mSurface;
@@ -175,7 +175,6 @@ public class MyMediaAsync implements MyMedia {
     public void pause() {
         mSync.setPlaybackParams(new PlaybackParams().setSpeed(0.f));
         mAudioTrack.pause();
-//        mSync.flush();
         mPlaying = false;
     }
 
@@ -254,11 +253,10 @@ public class MyMediaAsync implements MyMedia {
                 Log.w(TAG, "track empty");
                 return;
             }
-            long time = mExtractor.getSampleTime();
-            Log.d(TAG, "sampleTime=" + time);
+            long timeMs = mExtractor.getSampleTime();  // microsecond
             mediaCodec.queueInputBuffer(
                     index, 0, size,
-                    time, 0);
+                    timeMs, 0);
 
             mExtractor.advance();
         }
@@ -269,7 +267,7 @@ public class MyMediaAsync implements MyMedia {
             if (mIsAudio) {
                 ByteBuffer buffer = mediaCodec.getOutputBuffer(index);
                 if (buffer == null) {
-                    Log.w(TAG, "buffer is null");
+                    Log.w(TAG, "onOutputBufferAvailable: buffer is null");
                     return;
                 }
                 mSync.queueAudio(buffer, index, bufferInfo.presentationTimeUs);
