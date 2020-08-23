@@ -25,62 +25,74 @@
             app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <Button
-        android:id="@+id/resumeButton"
-        android:layout_width="wrap_content"
+    <TableLayout
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="resume"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/runButton" />
+        app:layout_constraintTop_toBottomOf="@+id/frameLayout">
 
-    <Button
-        android:id="@+id/pauseButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="pause"
-        app:layout_constraintStart_toEndOf="@+id/resumeButton"
-        app:layout_constraintTop_toTopOf="@+id/resumeButton" />
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-    <Button
-        android:id="@+id/restartButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="restart"
-        app:layout_constraintStart_toEndOf="@+id/pauseButton"
-        app:layout_constraintTop_toTopOf="@+id/pauseButton" />
+            <Button
+                android:id="@+id/asyncInitializeButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@android:color/holo_blue_light"
+                android:text="async" />
 
-    <Button
-        android:id="@+id/asyncInitializeButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:backgroundTint="@android:color/holo_blue_light"
-        android:text="async"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/frameLayout" />
+            <Button
+                android:id="@+id/asyncTunnelInitializeButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@android:color/holo_blue_light"
+                android:text="asyncTunnel" />
+        </TableRow>
 
-    <Button
-        android:id="@+id/asyncTunnelInitializeButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:backgroundTint="@android:color/holo_blue_light"
-        android:text="asyncTunnel"
-        app:layout_constraintStart_toEndOf="@+id/asyncInitializeButton"
-        app:layout_constraintTop_toTopOf="@+id/asyncInitializeButton" />
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-    <Button
-        android:id="@+id/runButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="run"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/asyncInitializeButton" />
+            <Button
+                android:id="@+id/runButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="run" />
 
-    <Button
-        android:id="@+id/releaseButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="release"
-        app:layout_constraintStart_toEndOf="@+id/runButton"
-        app:layout_constraintTop_toTopOf="@+id/runButton" />
+            <Button
+                android:id="@+id/releaseButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="release" />
+
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <Button
+                android:id="@+id/resumeButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="resume" />
+
+            <Button
+                android:id="@+id/pauseButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="pause" />
+
+            <Button
+                android:id="@+id/restartButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="restart" />
+        </TableRow>
+
+    </TableLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
