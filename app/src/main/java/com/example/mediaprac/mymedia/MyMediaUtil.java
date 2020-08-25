@@ -18,16 +18,9 @@ public class MyMediaUtil {
 
     static final String TAG = "MyMediaUtil";
 
-    static public MediaExtractor createExtractor(String uri) {
+    static public MediaExtractor createExtractor(String uri) throws IOException {
         MediaExtractor extractor = new MediaExtractor();
-        try {
-            extractor.setDataSource(uri);
-        } catch (IOException e) {
-            e.printStackTrace();
-            extractor.release();
-            return null;
-        }
-
+        extractor.setDataSource(uri);
         return extractor;
     }
 

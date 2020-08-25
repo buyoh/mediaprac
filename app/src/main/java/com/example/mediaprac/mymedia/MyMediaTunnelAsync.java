@@ -14,6 +14,7 @@ import android.view.Surface;
 
 import androidx.annotation.NonNull;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 
 public class MyMediaTunnelAsync implements MyMedia {
@@ -56,7 +57,7 @@ public class MyMediaTunnelAsync implements MyMedia {
     }
 
     @Override
-    public boolean initialize(String contentUri) {
+    public boolean initialize(String contentUri) throws IOException {
         Log.d(TAG, "[1]initialize");
         if (mRunning) {
             Log.w(TAG, "initialize failed. media is running.");

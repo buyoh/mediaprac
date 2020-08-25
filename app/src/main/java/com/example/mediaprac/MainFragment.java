@@ -17,6 +17,8 @@ import androidx.fragment.app.Fragment;
 import com.example.mediaprac.mymedia.MyMedia;
 import com.example.mediaprac.mymedia.MyMediaFactory;
 
+import java.io.IOException;
+
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link MainFragment#newInstance} factory method to
@@ -131,10 +133,16 @@ public class MainFragment extends Fragment {
 
                 toast("initializing...");
                 mMedia = MyMediaFactory.create(MyMediaFactory.TYPE_ASYNC, s, context);
-                if (mMedia.initialize(mVideoUrl)) {
-                    toast("initialize success");
-                } else {
-                    toast("initialize failed");
+
+                try {
+                    if (mMedia.initialize(mVideoUrl)) {
+                        toast("initialize success");
+                    } else {
+                        toast("initialize failed");
+                    }
+                } catch (IOException e) {
+                    toast("initialize failed: IOException");
+                    e.printStackTrace();
                 }
             }
 
@@ -166,10 +174,16 @@ public class MainFragment extends Fragment {
 
                 toast("initializing...");
                 mMedia = MyMediaFactory.create(MyMediaFactory.TYPE_TUNNELED_ASYNC, s, context);
-                if (mMedia.initialize(mVideoUrl)) {
-                    toast("initialize success");
-                } else {
-                    toast("initialize failed");
+
+                try {
+                    if (mMedia.initialize(mVideoUrl)) {
+                        toast("initialize success");
+                    } else {
+                        toast("initialize failed");
+                    }
+                } catch (IOException e) {
+                    toast("initialize failed: IOException");
+                    e.printStackTrace();
                 }
             }
 
