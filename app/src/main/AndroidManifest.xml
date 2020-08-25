@@ -4,6 +4,7 @@
     package="com.example.mediaprac">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <!-- Configuration for AndroidTV -->
     <uses-feature
@@ -20,7 +21,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        android:banner="@mipmap/ic_launcher">
+        android:banner="@mipmap/ic_launcher"
+        android:requestLegacyExternalStorage="true">
+        <!-- requestLegacyExternalStorage -->
+        <!-- https://medium.com/@sriramaripirala/android-10-open-failed-eacces-permission-denied-da8b630a89df -->
 
         <activity android:name=".MainActivity">
             <intent-filter>
