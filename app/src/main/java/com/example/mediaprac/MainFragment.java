@@ -118,39 +118,13 @@ public class MainFragment extends Fragment {
             toast("invalid video url");
             return;
         }
-
-        final Context context = getActivity();//getApplicationContext();
-
         view.setEnabled(false);
-        new Thread(new TryRunnable() {
+        initializeMedia(mVideoUrl, MyMediaFactory.TYPE_ASYNC, new Runnable() {
             @Override
-            public void runTask() {
-                if (mMedia != null && mMedia.isInitialized()) {
-                    toast("media is not released");
-                    return;
-                }
-                Surface s = mVideoSurfaceView.getHolder().getSurface();
-
-                toast("initializing...");
-                mMedia = MyMediaFactory.create(MyMediaFactory.TYPE_ASYNC, s, context);
-
-                try {
-                    if (mMedia.initialize(mVideoUrl)) {
-                        toast("initialize success");
-                    } else {
-                        toast("initialize failed");
-                    }
-                } catch (IOException e) {
-                    toast("initialize failed: IOException");
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void finalizeTask() {
+            public void run() {
                 enableView(view, true);
             }
-        }).start();
+        });
 
     }
 
@@ -159,40 +133,13 @@ public class MainFragment extends Fragment {
             toast("invalid video url");
             return;
         }
-
-        final Context context = getActivity().getApplicationContext();
-
         view.setEnabled(false);
-        new Thread(new TryRunnable() {
+        initializeMedia(mVideoUrl, MyMediaFactory.TYPE_TUNNELED_ASYNC, new Runnable() {
             @Override
-            public void runTask() {
-                if (mMedia != null && mMedia.isInitialized()) {
-                    toast("media is not released");
-                    return;
-                }
-                Surface s = mVideoSurfaceView.getHolder().getSurface();
-
-                toast("initializing...");
-                mMedia = MyMediaFactory.create(MyMediaFactory.TYPE_TUNNELED_ASYNC, s, context);
-
-                try {
-                    if (mMedia.initialize(mVideoUrl)) {
-                        toast("initialize success");
-                    } else {
-                        toast("initialize failed");
-                    }
-                } catch (IOException e) {
-                    toast("initialize failed: IOException");
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void finalizeTask() {
+            public void run() {
                 enableView(view, true);
             }
-        }).start();
-
+        });
     }
 
     public void runButton_onClick(final View view) {
@@ -335,12 +282,39 @@ public class MainFragment extends Fragment {
 
     //
 
-    private void runOnUIThread(Runnable r) {
-        if (Thread.currentThread().equals(mUIHandler.getLooper().getThread())) {
-            r.run();
-        } else {
-            mUIHandler.post(r);
-        }
+    private void initializeMedia(final String videoUrl, final int mediaType, final Runnable finalizer) {
+        final Context context = getActivity().getApplicationContext();
+
+        new Thread(new TryRunnable() {
+            @Override
+            public void runTask() {
+                if (mMedia != null && mMedia.isInitialized()) {
+                    toast("media is not released");
+                    return;
+                }
+                Surface s = mVideoSurfaceView.getHolder().getSurface();
+
+                toast("initializing...");
+                mMedia = MyMediaFactory.create(mediaType, s, context);
+
+                try {
+                    if (mMedia.initialize(videoUrl)) {
+                        toast("initialize success");
+                    } else {
+                        toast("initialize failed");
+                    }
+                } catch (IOException e) {
+                    toast("initialize failed: IOException");
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void finalizeTask() {
+                finalizer.run();
+            }
+        }).start();
+
     }
 
     private void enableView(final View view, final boolean enable) {
@@ -377,6 +351,14 @@ public class MainFragment extends Fragment {
                 Toast.makeText(that, message, Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void runOnUIThread(Runnable r) {
+        if (Thread.currentThread().equals(mUIHandler.getLooper().getThread())) {
+            r.run();
+        } else {
+            mUIHandler.post(r);
+        }
     }
 
     static abstract class TryRunnable implements Runnable {
