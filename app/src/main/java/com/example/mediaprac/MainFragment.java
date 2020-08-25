@@ -26,7 +26,7 @@ public class MainFragment extends Fragment {
     private static final String TAG = "MainFragment";
 
 
-    private static final String myNiceVideoContent = "https://ia600603.us.archive.org/30/items/Tears-of-Steel/tears_of_steel_1080p.mp4";
+    private String mVideoUrl = null;
 
     SurfaceView mVideoSurfaceView = null;
 
@@ -84,6 +84,11 @@ public class MainFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         mUIHandler = new Handler();
+
+        if (getArguments() != null) {
+            mVideoUrl = getArguments().getString("video_url");
+            Log.d(TAG, "given url: " + mVideoUrl);
+        }
     }
 
     @Override
@@ -107,6 +112,10 @@ public class MainFragment extends Fragment {
     //
 
     public void asyncInitializeButton_onClick(final View view) {
+        if (mVideoUrl == null) {
+            toast("invalid video url");
+            return;
+        }
 
         final Context context = getActivity();//getApplicationContext();
 
@@ -122,7 +131,7 @@ public class MainFragment extends Fragment {
 
                 toast("initializing...");
                 mMedia = MyMediaFactory.create(MyMediaFactory.TYPE_ASYNC, s, context);
-                if (mMedia.initialize(myNiceVideoContent)) {
+                if (mMedia.initialize(mVideoUrl)) {
                     toast("initialize success");
                 } else {
                     toast("initialize failed");
@@ -138,6 +147,10 @@ public class MainFragment extends Fragment {
     }
 
     public void asyncTunnelInitializeButton_onClick(final View view) {
+        if (mVideoUrl == null) {
+            toast("invalid video url");
+            return;
+        }
 
         final Context context = getActivity().getApplicationContext();
 
@@ -153,7 +166,7 @@ public class MainFragment extends Fragment {
 
                 toast("initializing...");
                 mMedia = MyMediaFactory.create(MyMediaFactory.TYPE_TUNNELED_ASYNC, s, context);
-                if (mMedia.initialize(myNiceVideoContent)) {
+                if (mMedia.initialize(mVideoUrl)) {
                     toast("initialize success");
                 } else {
                     toast("initialize failed");
