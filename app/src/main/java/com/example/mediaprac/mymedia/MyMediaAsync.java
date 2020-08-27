@@ -130,10 +130,15 @@ public class MyMediaAsync implements MyMedia {
         pause();
         mRunning = false;
 
+        // pause時には、MediaCodecのoutBufferがMediaSyncのどこかでブロックされるようで、
+        // このoutBufferが使用可能状態になるまでmVideoCodec.release()が待機してしまう。
+        // これを解決するためには、MediaSyncのどこかでブロックしているoutBufferを流す必要がある
+        mSync.flush();
+
         mSync.release();
         mVideoCodec.stop();
         mVideoCodec.release();
-        mAudioCodec.stop();
+
         mAudioCodec.release();
         mVideoExtractor.release();
         mAudioExtractor.release();

@@ -180,6 +180,7 @@ public class MainFragment extends Fragment {
                     toast("media is not initialized");
                     return;
                 }
+                toast("calling release...");
                 mMedia.release();
                 toast("release");
                 mMedia = null;
