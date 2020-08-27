@@ -233,6 +233,22 @@ public class MainFragment extends Fragment {
         }).start();
     }
 
+    public void rewind5Button_onClick(final View view) {
+        toast("Not implemented!");
+    }
+
+    public void rewind30Button_onClick(final View view) {
+        toast("Not implemented!");
+    }
+
+    public void forward5Button_onClick(final View view) {
+        toast("Not implemented!");
+    }
+
+    public void forward30Button_onClick(final View view) {
+        toast("Not implemented!");
+    }
+
     //
 
     private void attachHandler(View view) {
@@ -276,6 +292,31 @@ public class MainFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 restartButton_onClick(view);
+            }
+        });
+
+        view.findViewById(R.id.rewind5Button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                rewind5Button_onClick(view);
+            }
+        });
+        view.findViewById(R.id.rewind30Button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                rewind30Button_onClick(view);
+            }
+        });
+        view.findViewById(R.id.forward5Button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                forward5Button_onClick(view);
+            }
+        });
+        view.findViewById(R.id.forward30Button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                forward30Button_onClick(view);
             }
         });
 

@@ -25,17 +25,19 @@
             app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <TableLayout
+    <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/frameLayout">
 
-        <TableRow
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
 
             <Button
                 android:id="@+id/asyncInitializeButton"
@@ -50,11 +52,12 @@
                 android:layout_height="wrap_content"
                 android:backgroundTint="@android:color/holo_blue_light"
                 android:text="asyncTunnel" />
-        </TableRow>
+        </LinearLayout>
 
-        <TableRow
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
 
             <Button
                 android:id="@+id/runButton"
@@ -67,12 +70,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="release" />
+        </LinearLayout>
 
-        </TableRow>
-
-        <TableRow
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
 
             <Button
                 android:id="@+id/resumeButton"
@@ -91,8 +94,37 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="restart" />
-        </TableRow>
+        </LinearLayout>
 
-    </TableLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/rewind30Button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="-30s" />
+
+            <Button
+                android:id="@+id/rewind5Button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="-5s" />
+
+            <Button
+                android:id="@+id/forward5Button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="+5s" />
+
+            <Button
+                android:id="@+id/forward30Button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="+30s" />
+        </LinearLayout>
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
