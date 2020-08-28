@@ -66,9 +66,6 @@ public class MainFragment extends Fragment {
 
             @Override
             public void surfaceChanged(SurfaceHolder surfaceHolder, int format, int width, int height) {
-                if (mMedia == null || !mMedia.isInitialized())
-                    return;
-                mMedia.setSurface(surfaceHolder.getSurface());
             }
 
             @Override

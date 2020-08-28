@@ -119,6 +119,8 @@ public class MyMediaAsync implements MyMedia {
         mGivenSurface = s;
         if (mVideoCodec == null) return;
         assert mSync != null;
+        if (!isInitialized()) return;
+        if (isPlaying()) return;
         mSync.setSurface(mGivenSurface);
     }
 
