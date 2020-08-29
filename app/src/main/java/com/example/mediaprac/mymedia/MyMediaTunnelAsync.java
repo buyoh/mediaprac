@@ -33,6 +33,7 @@ public class MyMediaTunnelAsync implements MyMedia {
     private MediaCodec mVideoCodec, mAudioCodec;
     private Context mContext;
 
+    private long mMediaDurationUs = 0;
     private int mWidth = -1, mHeight = -1;
 
     public MyMediaTunnelAsync(Surface surface, Context context) {
@@ -96,6 +97,10 @@ public class MyMediaTunnelAsync implements MyMedia {
         }
         MediaFormat audioMediaFormat = extractor.getTrackFormat(audioTrackIndex);
         MediaFormat videoMediaFormat = extractor.getTrackFormat(videoTrackIndex);
+        mMediaDurationUs = Math.min(
+                audioMediaFormat.getLong(MediaFormat.KEY_DURATION),
+                videoMediaFormat.getLong(MediaFormat.KEY_DURATION)
+        );
 
         // enable tunneled playback (tunneling)
         videoMediaFormat.setFeatureEnabled(MediaCodecInfo.CodecCapabilities.FEATURE_TunneledPlayback, true);
@@ -241,6 +246,17 @@ public class MyMediaTunnelAsync implements MyMedia {
     @Override
     public int getHeight() {
         return mHeight;
+    }
+
+    @Override
+    public long getDuration() {
+        return mMediaDurationUs;
+    }
+
+    @Override
+    public long getCurrentTime() {
+        // TODO: haha no idea
+        return 0;
     }
 
     @Override

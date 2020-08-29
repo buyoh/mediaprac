@@ -28,6 +28,7 @@ public class MyMediaAsync implements MyMedia {
     private MediaExtractor mVideoExtractor, mAudioExtractor;
     private MediaCodec mVideoCodec, mAudioCodec;
 
+    private long mMediaDurationUs = 0;
     private int mWidth = -1, mHeight = -1;
 
     public MyMediaAsync(Surface surface) {
@@ -76,6 +77,10 @@ public class MyMediaAsync implements MyMedia {
         }
         MediaFormat audioMediaFormat = extractor.getTrackFormat(audioTrackIndex);
         MediaFormat videoMediaFormat = extractor.getTrackFormat(videoTrackIndex);
+        mMediaDurationUs = Math.min(
+                audioMediaFormat.getLong(MediaFormat.KEY_DURATION),
+                videoMediaFormat.getLong(MediaFormat.KEY_DURATION)
+        );
 
         mVideoExtractor = MyMediaUtil.createExtractor(mContentUri);
         assert mVideoExtractor != null;
@@ -203,6 +208,7 @@ public class MyMediaAsync implements MyMedia {
 
     @Override
     public void seekTo(long timeUs) {
+        timeUs = Math.max(Math.min(getDuration(), timeUs), 0);
         mAudioExtractor.seekTo(timeUs, MediaExtractor.SEEK_TO_PREVIOUS_SYNC);
         mVideoExtractor.seekTo(timeUs, MediaExtractor.SEEK_TO_PREVIOUS_SYNC);
     }
@@ -215,6 +221,19 @@ public class MyMediaAsync implements MyMedia {
     @Override
     public int getHeight() {
         return mHeight;
+    }
+
+    @Override
+    public long getDuration() {
+        return mMediaDurationUs;
+    }
+
+    @Override
+    public long getCurrentTime() {
+        if (mSync == null) return 0;
+        assert mSync.getTimestamp() != null;
+        return mSync.getTimestamp().getAnchorMediaTimeUs();
+        // TODO: need video outputBuffer?
     }
 
     @Override

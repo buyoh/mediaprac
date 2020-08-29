@@ -26,6 +26,10 @@ public interface MyMedia {
 
     int getHeight();
 
+    long getDuration();
+
+    long getCurrentTime();
+
     void setSurface(Surface s);
 
     boolean isRunning();

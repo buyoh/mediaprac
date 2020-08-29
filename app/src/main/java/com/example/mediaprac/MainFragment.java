@@ -27,7 +27,6 @@ import java.io.IOException;
 public class MainFragment extends Fragment {
     private static final String TAG = "MainFragment";
 
-
     private String mVideoUrl = null;
 
     SurfaceView mVideoSurfaceView = null;
@@ -230,20 +229,20 @@ public class MainFragment extends Fragment {
         }).start();
     }
 
-    public void rewind5Button_onClick(final View view) {
-        toast("Not implemented!");
+    public void rewind5Button_onClick(View view) {
+        seekVideoDelta(-5 * 1000 * 1000, view);
     }
 
-    public void rewind30Button_onClick(final View view) {
-        toast("Not implemented!");
+    public void rewind30Button_onClick(View view) {
+        seekVideoDelta(-30 * 1000 * 1000, view);
     }
 
-    public void forward5Button_onClick(final View view) {
-        toast("Not implemented!");
+    public void forward5Button_onClick(View view) {
+        seekVideoDelta(5 * 1000 * 1000, view);
     }
 
-    public void forward30Button_onClick(final View view) {
-        toast("Not implemented!");
+    public void forward30Button_onClick(View view) {
+        seekVideoDelta(30 * 1000 * 1000, view);
     }
 
     //
@@ -379,6 +378,30 @@ public class MainFragment extends Fragment {
         lp.width = (int) (r * originalWidth);
         lp.height = (int) (r * originalHeight);
         sv.setLayoutParams(lp);
+    }
+
+    private void seekVideoDelta(final long deltaUs, final View view) {
+
+        final long current = mMedia.getCurrentTime();
+        mMedia.seekTo(current + deltaUs);
+
+//        if (view != null) view.setEnabled(false);
+//        final long current = mMedia.getCurrentTime();
+//        new Thread(new TryRunnable() {
+//            @Override
+//            public void runTask() {
+//                if (mMedia == null || !mMedia.isRunning()) {
+//                    toast("media is not running");
+//                    return;
+//                }
+//                mMedia.seekTo(current + deltaUs);
+//            }
+//
+//            @Override
+//            public void finalizeTask() {
+//                if (view != null) enableView(view, true);
+//            }
+//        }).start();
     }
 
     private void toast(final String message) {
