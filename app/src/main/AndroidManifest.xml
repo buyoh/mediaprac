@@ -22,6 +22,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:banner="@mipmap/ic_launcher"
+        android:hardwareAccelerated="true"
         android:requestLegacyExternalStorage="true">
         <!-- requestLegacyExternalStorage -->
         <!-- https://medium.com/@sriramaripirala/android-10-open-failed-eacces-permission-denied-da8b630a89df -->

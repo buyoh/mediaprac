@@ -77,6 +77,10 @@ public class MyMediaAsync implements MyMedia {
         }
         MediaFormat audioMediaFormat = extractor.getTrackFormat(audioTrackIndex);
         MediaFormat videoMediaFormat = extractor.getTrackFormat(videoTrackIndex);
+
+        // videoMediaFormat.setFeatureEnabled(MediaCodecInfo.CodecCapabilities.FEATURE_AdaptivePlayback, true);
+        // audioMediaFormat.setFeatureEnabled(MediaCodecInfo.CodecCapabilities.FEATURE_AdaptivePlayback, true);
+
         mMediaDurationUs = Math.min(
                 audioMediaFormat.getLong(MediaFormat.KEY_DURATION),
                 videoMediaFormat.getLong(MediaFormat.KEY_DURATION)
@@ -211,6 +215,11 @@ public class MyMediaAsync implements MyMedia {
         timeUs = Math.max(Math.min(getDuration(), timeUs), 0);
         mAudioExtractor.seekTo(timeUs, MediaExtractor.SEEK_TO_PREVIOUS_SYNC);
         mVideoExtractor.seekTo(timeUs, MediaExtractor.SEEK_TO_PREVIOUS_SYNC);
+//        mAudioExtractor.advance();
+//        mVideoExtractor.advance();
+//        mSync.flush();
+//        mVideoCodec.flush();
+//        mAudioCodec.flush();\
     }
 
     @Override
@@ -233,7 +242,6 @@ public class MyMediaAsync implements MyMedia {
         if (mSync == null) return 0;
         assert mSync.getTimestamp() != null;
         return mSync.getTimestamp().getAnchorMediaTimeUs();
-        // TODO: need video outputBuffer?
     }
 
     @Override

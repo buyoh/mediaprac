@@ -382,26 +382,23 @@ public class MainFragment extends Fragment {
 
     private void seekVideoDelta(final long deltaUs, final View view) {
 
+        if (view != null) view.setEnabled(false);
         final long current = mMedia.getCurrentTime();
-        mMedia.seekTo(current + deltaUs);
+        new Thread(new TryRunnable() {
+            @Override
+            public void runTask() {
+                if (mMedia == null || !mMedia.isRunning()) {
+                    toast("media is not running");
+                    return;
+                }
+                mMedia.seekTo(current + deltaUs);
+            }
 
-//        if (view != null) view.setEnabled(false);
-//        final long current = mMedia.getCurrentTime();
-//        new Thread(new TryRunnable() {
-//            @Override
-//            public void runTask() {
-//                if (mMedia == null || !mMedia.isRunning()) {
-//                    toast("media is not running");
-//                    return;
-//                }
-//                mMedia.seekTo(current + deltaUs);
-//            }
-//
-//            @Override
-//            public void finalizeTask() {
-//                if (view != null) enableView(view, true);
-//            }
-//        }).start();
+            @Override
+            public void finalizeTask() {
+                if (view != null) enableView(view, true);
+            }
+        }).start();
     }
 
     private void toast(final String message) {
